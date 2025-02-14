@@ -1,45 +1,25 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Breadcrumb, Layout, Menu, MenuProps, theme } from 'antd'
-import {
-  LaptopOutlined,
-  NotificationOutlined,
-  UserOutlined,
-} from '@ant-design/icons'
-import { Outlet } from 'react-router'
+import { Link, Outlet, useLocation } from 'react-router'
+import { routes } from '@/routes'
 
 const { Header, Content, Sider } = Layout
 
-const items1: MenuProps['items'] = ['1', '2', '3'].map(key => ({
-  key,
-  label: `nav ${key}`,
+const items1: MenuProps['items'] = routes.map(v => ({
+  key: v.path ?? '',
+  label: <Link to={v.path ?? ''}>{v.meta?.title ?? ''}</Link>,
 }))
-
-const items2: MenuProps['items'] = [
-  UserOutlined,
-  LaptopOutlined,
-  NotificationOutlined,
-].map((icon, index) => {
-  const key = String(index + 1)
-
-  return {
-    key: `sub${key}`,
-    icon: React.createElement(icon),
-    label: `subnav ${key}`,
-
-    children: new Array(4).fill(null).map((_, j) => {
-      const subKey = index * 4 + j + 1
-      return {
-        key: subKey,
-        label: `option${subKey}`,
-      }
-    }),
-  }
-})
 
 const LayoutComp: React.FC = () => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken()
+
+  const { pathname } = useLocation()
+  const curRoute = routes.find(v => v.path === pathname)
+  useEffect(() => {
+    if (curRoute?.meta?.title) document.title = curRoute.meta.title
+  }, [pathname, curRoute])
 
   return (
     <Layout>
@@ -58,10 +38,9 @@ const LayoutComp: React.FC = () => {
         <Sider width={200} style={{ background: colorBgContainer }}>
           <Menu
             mode="inline"
-            defaultSelectedKeys={['1']}
-            defaultOpenKeys={['sub1']}
+            defaultSelectedKeys={['2']}
+            items={items1}
             style={{ height: '100%', borderRight: 0 }}
-            items={items2}
           />
         </Sider>
 
