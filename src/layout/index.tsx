@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Breadcrumb, Layout, Menu, MenuProps, theme } from 'antd'
+import { Layout, Menu, MenuProps, theme } from 'antd'
 import { Link, Outlet, useLocation } from 'react-router'
 import { routes } from '@/routes'
 
@@ -44,11 +44,11 @@ const LayoutComp: React.FC = () => {
           />
         </Sider>
 
-        <Layout style={{ padding: '0 24px 24px' }}>
-          <Breadcrumb
+        <Layout style={{ padding: '24px' }}>
+          {/* <Breadcrumb
             items={[{ title: 'Home' }, { title: 'List' }, { title: 'App' }]}
             style={{ margin: '16px 0' }}
-          />
+          /> */}
           <Content
             style={{
               padding: 24,

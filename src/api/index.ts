@@ -1,11 +1,6 @@
 import { API } from '@/types/api'
 import request from '@/utils/request'
 import config from '@/config/index.json'
-// import { AxiosResponse } from 'axios'
-
-// const baseURL = 'api/'
-
-// type TesRequest = Promise<AxiosResponse<API.TesRequest>['data']>
 
 export async function indexData(): API.InfoRes {
   return request({
