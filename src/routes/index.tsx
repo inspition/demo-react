@@ -10,7 +10,7 @@ interface RouteProps extends PathRouteProps {
   }
 }
 
-const App = lazy(() => import('@/App'))
+// const App = lazy(() => import('@/App'))
 const ChartsDemo = lazy(() => import('@/views/ChartsDemo'))
 
 /**
@@ -19,6 +19,6 @@ const ChartsDemo = lazy(() => import('@/views/ChartsDemo'))
  * @type {PathRouteProps[]}
  */
 export const routes: RouteProps[] = [
-  { path: '/', element: <App />, meta: { title: 'home' } },
-  { path: '/charts', element: <ChartsDemo />, meta: { title: 'charts' } },
+  // { path: '/', element: <App />, meta: { title: 'home' } },
+  { path: '/', element: <ChartsDemo />, meta: { title: '天气图表' } },
 ]

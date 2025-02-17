@@ -4,6 +4,7 @@ import config from '@/config/index.json'
 
 export async function indexData(): API.InfoRes {
   return request({
+    // url: 'https://www.richworld.shop/api/weixin/index/appInfo',
     baseURL: import.meta.env.VITE_BASE_API, // API 的基础 URL,
     url: 'weixin/index/appInfo',
     method: 'GET',
@@ -25,8 +26,9 @@ export function weatherforecast(params: {
   extensions?: 'base' | 'all' // base:返回实况天气 all:返回预报天气
 }): API.WeatherRes {
   return request({
-    baseURL: import.meta.env.VITE_WEATHER_API, // API 的基础 URL,
-    url: 'v3/weather/weatherInfo',
+    url: 'https://restapi.amap.com/v3/weather/weatherInfo',
+    // baseURL: import.meta.env.VITE_WEATHER_API, // API 的基础 URL,
+    // url: 'v3/weather/weatherInfo',
     method: 'GET',
     params: {
       ...params,

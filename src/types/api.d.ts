@@ -115,4 +115,23 @@ declare namespace API {
     windpower?: string
     [property: string]: unknown
   }
+
+  interface MeteoParams {
+    latitude?: number
+    longitude?: number
+    hourly?: string
+    models?: string
+    [key: string]: unknown
+  }
+
+  interface MeteoData {
+    date: string
+    temperature2m: string
+  }
+
+  interface MinMax {
+    max: number
+    min: number
+    date: string
+  }
 }

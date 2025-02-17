@@ -60,14 +60,14 @@ export function BarChart({
 }
 
 /**
- * 折线图
+ * 双折线对比图
  *
  * @export
  * @param {{ data: API.Cast[] }} param0
  * @param {{}} param0.data
  * @returns {*}
  */
-export function LineChart({ data }: { data: API.Cast[] }) {
+export function DoubleLineChart({ data }: { data: API.Cast[] }) {
   const container = useRef(null)
 
   useEffect(() => {
@@ -86,6 +86,60 @@ export function LineChart({ data }: { data: API.Cast[] }) {
       {
         日期: item.date,
         温度: parseFloat(item.nighttemp_float),
+        type: '最低气温',
+      },
+    ])
+
+    chart
+      .data(transformedData)
+      .encode('x', '日期')
+      .encode('y', '温度')
+      .encode('color', 'type')
+      .scale('x', {
+        range: [0, 1],
+      })
+      .scale('y', {
+        nice: true,
+      })
+      .axis('y', { labelFormatter: (d: string) => d + '°C' })
+
+    chart.line().encode('shape', 'smooth')
+
+    chart.point().encode('shape', 'point').tooltip(false)
+
+    chart.render()
+  }
+
+  return <div ref={container}></div>
+}
+
+/**
+ * 折线图
+ *
+ * @export
+ * @param {{ data: API.Cast[] }} param0
+ * @param {{}} param0.data
+ * @returns {*}
+ */
+export function LineChart({ data }: { data: API.MinMax[] }) {
+  const container = useRef(null)
+
+  useEffect(() => {
+    if (container.current) init(container.current)
+  }, [data])
+
+  function init(container: HTMLElement) {
+    const chart = new Chart({ container, autoFit: true })
+
+    const transformedData = data.flatMap(item => [
+      {
+        日期: item.date,
+        温度: parseFloat(item.max + ''),
+        type: '最高气温',
+      },
+      {
+        日期: item.date,
+        温度: parseFloat(item.min + ''),
         type: '最低气温',
       },
     ])
