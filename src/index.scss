@@ -3,6 +3,11 @@
   padding: 0;
 }
 
+.cesium-widget-credits {
+  /* 去除logo */
+  display: none !important;
+}
+
 // :root {
 //   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 //   line-height: 1.5;

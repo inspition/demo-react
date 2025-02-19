@@ -60,14 +60,17 @@ export function BarChart({
 }
 
 /**
- * 双折线对比图
+ * 多折线对比图
  *
  * @export
  * @param {{ data: API.Cast[] }} param0
  * @param {{}} param0.data
  * @returns {*}
  */
-export function DoubleLineChart({ data }: { data: API.Cast[] }) {
+export function LinesChart({
+  data,
+  ...props
+}: { data: API.Cast[] } & HTMLAttributes<HTMLDivElement>) {
   const container = useRef(null)
 
   useEffect(() => {
@@ -110,7 +113,7 @@ export function DoubleLineChart({ data }: { data: API.Cast[] }) {
     chart.render()
   }
 
-  return <div ref={container}></div>
+  return <div {...props} ref={container}></div>
 }
 
 /**
@@ -155,6 +158,7 @@ export function LineChart({ data }: { data: API.MinMax[] }) {
       .scale('y', {
         nice: true,
       })
+      .axis('x', { tickCount: 5 })
       .axis('y', { labelFormatter: (d: string) => d + '°C' })
 
     chart.line().encode('shape', 'smooth')
@@ -266,6 +270,127 @@ export function WindCharts({
 
     chart.axis('y', { title: '风力等级' })
     chart.axis('x', { title: false })
+
+    chart.render()
+  }
+
+  return <div {...props} ref={container}></div>
+}
+
+/**
+ * 柱线混合
+ *
+ * @export
+ * @param {({ data: API.Cast[] } & HTMLAttributes<HTMLDivElement>)} param0
+ * @param {*} param0.data
+ * @param {*} param0....props
+ * @returns {*}
+ */
+export function DualLineChart({
+  data,
+  ...props
+}: { data: API.Cast[] } & HTMLAttributes<HTMLDivElement>) {
+  const container = useRef(null)
+
+  useEffect(() => {
+    if (container.current) init(container.current)
+  }, [data])
+
+  function init(container: HTMLElement) {
+    const chart = new Chart({ container, autoFit: true })
+
+    const transformedData = data.flatMap(item => [
+      {
+        日期: item.date,
+        温度: parseFloat(item.max + ''),
+        type: '最高气温',
+      },
+      {
+        日期: item.date,
+        温度: parseFloat(item.min + ''),
+        type: '最低气温',
+      },
+    ])
+
+    chart.data(transformedData)
+
+    chart
+      .interval()
+      .encode('x', '日期')
+      .encode('y', '温度')
+      .axis('y', { title: '温度', titleFill: '#5B8FF9' })
+
+    chart
+      .line()
+      .encode('x', '日期')
+      .encode('y', '温度')
+      .encode('shape', 'smooth')
+      .style('stroke', '#fdae6b')
+      .style('lineWidth', 2)
+      .scale('y', { independent: true })
+      .axis('y', {
+        position: 'right',
+        grid: null,
+        title: '温度',
+        titleFill: '#fdae6b',
+      })
+
+    chart.render()
+  }
+
+  return <div {...props} ref={container}></div>
+}
+
+/**
+ * 通用图表
+ *
+ * @export
+ * @param {({ data: API.Cast[] } & HTMLAttributes<HTMLDivElement>)} param0
+ * @param {*} param0.data
+ * @param {*} param0....props
+ * @returns {*}
+ */
+export function CommonChart({
+  data,
+  ...props
+}: { data: API.Cast[] } & HTMLAttributes<HTMLDivElement>) {
+  const container = useRef(null)
+
+  useEffect(() => {
+    if (container.current) init(container.current)
+  }, [data])
+
+  function init(container: HTMLElement) {
+    const chart = new Chart({ container, autoFit: true })
+
+    const transformedData = data.flatMap(item => [
+      {
+        日期: item.date,
+        温度: parseFloat(item.daytemp_float),
+        type: '最高气温',
+      },
+      {
+        日期: item.date,
+        温度: parseFloat(item.nighttemp_float),
+        type: '最低气温',
+      },
+    ])
+
+    chart.data(transformedData)
+
+    chart
+      .area()
+      .encode('x', '日期')
+      .encode('y', '温度')
+      .encode('shape', 'smooth')
+    // .animate({ appear: { animation: 'fadeIn', duration: 1000 } })
+
+    // 叠加折线
+    chart
+      .line()
+      .encode('x', '日期')
+      .encode('y', '温度')
+      .encode('shape', 'smooth')
 
     chart.render()
   }

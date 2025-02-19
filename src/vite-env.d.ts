@@ -1,5 +1,7 @@
 /// <reference types="vite/client" />
 
+import { Viewer } from 'cesium'
+
 interface ImportMetaEnv {
   readonly VITE_BASE_API: string
   readonly VITE_BASE_PATH: string
@@ -11,4 +13,10 @@ interface ImportMetaEnv {
 
 interface ImportMeta {
   readonly env: ImportMetaEnv
+}
+
+declare global {
+  interface Window {
+    viewer: Viewer
+  }
 }

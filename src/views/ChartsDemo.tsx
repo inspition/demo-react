@@ -14,36 +14,34 @@ import {
   TabsProps,
 } from 'antd'
 import { CheckboxGroupProps } from 'antd/es/checkbox'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Prism } from 'react-syntax-highlighter'
 import { coy } from 'react-syntax-highlighter/dist/esm/styles/prism'
 
 import output from '@/assets/output.json'
-import { CommonCharts } from '@/components'
+import { CesiumWrap, CommonCharts } from '@/components'
 import { fetchWeather } from '@/api/meteo'
+// import { AddedEntity } from '@/components/cesium'
 
 export default function ChardtsDemo() {
-  // 请求演示
-  // const [content, setContent] = useState<API.Data>()
-  // async function handleClick() {
-  //   setContent(undefined)
-
-  //   const { data } = await indexData()
-
-  //   setContent(data)
-  //   // console.log(import.meta.env)
-  // }
-
-  // 天气查询
+  //------------天气查询
   const [loading, setLoading] = useState<boolean>(false)
   const [extensions, setExtensions] = useState<'base' | 'all'>('base')
   const [weatherStr, setWeather] = useState<API.WeatherResponse>()
-  const [meteoData, setMeteoData] = useState<API.MinMax[]>()
+  // const [meteoData, setMeteoData] = useState<API.MinMax[]>()
+  const [meteoData, setMeteoData] = useState<API.Cast[]>()
+  const [city, setCity] = useState<string>('350200')
+  const combData = useMemo(() => {
+    const weaData = weatherStr?.forecasts?.flatMap(v => v.casts) ?? []
+    const comb = [...(weaData ?? []), ...(meteoData ?? [])] as API.Cast[]
+
+    return comb.sort((a, b) => (a?.date === b?.date ? -1 : 1))
+  }, [weatherStr, meteoData])
+
   const options: CheckboxGroupProps<string>['options'] = [
     { label: '实况天气', value: 'base' },
     { label: '预报天气', value: 'all' },
   ]
-  const [city, setCity] = useState<string>('350200')
   const areaOptions: SelectProps['options'] = output.map(
     ({ label, adcode, citycode }) => ({ label, value: adcode, citycode })
   )
@@ -57,6 +55,7 @@ export default function ChardtsDemo() {
     setCity(value)
     // searchWeather()
   }
+  // 高德天气
   async function searchWeather() {
     setLoading(true)
     setWeather(undefined)
@@ -69,14 +68,16 @@ export default function ChardtsDemo() {
     // fetchWeather()
     // apiOpemMeteo({
   }
-
-  async function fetchMeteoWeather() {
+  // open-meteo天气
+  async function fetchMeteoWeather(
+    position = { latitude: 24.3125, longitude: 118 }
+  ) {
     setLoading(true)
     setMeteoData(undefined)
 
     const { data } = await fetchWeather({
-      latitude: 24.3125,
-      longitude: 118,
+      latitude: position.latitude,
+      longitude: position.longitude,
       hourly: 'temperature_2m',
       forecast_days: '10',
       models: 'cma_grapes_global',
@@ -85,7 +86,9 @@ export default function ChardtsDemo() {
     })
 
     const minMaxMap: Map<string, API.MinMax> = new Map()
-    const map = data?.map(v => ({ ...v, date: v.date?.slice(0, 9) }))
+    const map = data
+      ?.filter(v => v.temperature2m !== 'NaN')
+      ?.map(v => ({ ...v, date: v.date?.slice(0, 9) }))
     map.forEach(v => {
       const { date, temperature2m } = v
 
@@ -100,13 +103,33 @@ export default function ChardtsDemo() {
 
       if (+temperature2m > minMax.max) minMax.max = +temperature2m
     })
-    const list = [...minMaxMap.values()]
+    const list: API.Cast[] = [...minMaxMap.values()].map(
+      ({ date, min, max }) => ({
+        date,
+        daytemp_float: max + '',
+        nighttemp_float: min + '',
+
+        daypower: '',
+        daytemp: '',
+        dayweather: '',
+        daywind: '',
+        nightpower: '',
+        nighttemp: '',
+        nightweather: '',
+        nightwind: '',
+        week: '',
+      })
+    )
 
     console.log('meteo:', data, list)
 
     setMeteoData(list)
     setLoading(false)
   }
+  // function onMapAdded(entity: AddedEntity) {
+  //   fetchMeteoWeather(entity)
+  // }
+  //------------天气查询 end
 
   useEffect(() => {
     if (extensions || city) searchWeather()
@@ -116,21 +139,6 @@ export default function ChardtsDemo() {
   }, [extensions, city])
 
   const tabItems: TabsProps['items'] = [
-    // {
-    //   key: '1',
-    //   label: '请求演示',
-    //   children: (
-    //     <>
-    //       <Button onClick={handleClick} type="primary">
-    //         请求演示
-    //       </Button>
-
-    //       <Prism language="json" style={coy}>
-    //         {JSON.stringify(content, null, 2)}
-    //       </Prism>
-    //     </>
-    //   ),
-    // },
     {
       key: '1',
       label: '天气查询',
@@ -177,23 +185,46 @@ export default function ChardtsDemo() {
                 </Prism>
               }
             >
-              <Button disabled={!weatherStr}>JSON</Button>
+              {/* <Button disabled={!weatherStr}>JSON</Button> */}
+              <Button disabled={!meteoData}>JSON</Button>
             </Popover>
           </Row>
 
-          <Skeleton loading={loading}>
-            <Row>
-              {weatherStr?.forecasts?.map(v => (
-                <>
-                  <CommonCharts.BarChart data={v?.casts ?? []} />
+          <Row align={'middle'}>
+            <Col flex="1">
+              <CesiumWrap onAdded={fetchMeteoWeather} />
+            </Col>
 
-                  <CommonCharts.DoubleLineChart data={v?.casts ?? []} />
-                </>
-              ))}
+            <Col span="8" style={{ minHeight: 1000 }}>
+              <Skeleton loading={loading} paragraph={{ rows: 10 }} active>
+                <Row>
+                  {weatherStr?.forecasts?.map(v => (
+                    <div key={v.city}>
+                      <CommonCharts.BarChart data={combData} />
 
-              {meteoData?.length && <CommonCharts.LineChart data={meteoData} />}
-            </Row>
-          </Skeleton>
+                      <CommonCharts.LinesChart data={v?.casts ?? []} />
+
+                      <CommonCharts.DistributionCharts data={v?.casts ?? []} />
+                    </div>
+                  ))}
+
+                  {/* <Col span="12"> */}
+                  <CommonCharts.BarChart
+                    data={meteoData ?? []}
+                    style={{ width: '100%' }}
+                  />
+                  {/* </Col> */}
+
+                  {/* <Col span="12"> */}
+                  <CommonCharts.LinesChart
+                    data={meteoData ?? []}
+                    style={{ width: '100%' }}
+                  />
+                  {/* </Col> */}
+                </Row>
+              </Skeleton>
+            </Col>
+          </Row>
         </div>
       ),
     },

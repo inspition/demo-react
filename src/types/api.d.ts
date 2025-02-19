@@ -1,8 +1,8 @@
 import { AxiosResponse } from 'axios'
 
-declare namespace API {
-  type CommonRes<T> = Promise<AxiosResponse<T>['data']>
+type CommonRes<T> = Promise<AxiosResponse<T>['data']>
 
+declare namespace API {
   /**
    * Request
    */
@@ -87,14 +87,14 @@ declare namespace API {
 
   interface Cast {
     date: string
+    daytemp_float: string
+    nighttemp_float: string
     daypower: string
     daytemp: string
-    daytemp_float: string
     dayweather: string
     daywind: string
     nightpower: string
     nighttemp: string
-    nighttemp_float: string
     nightweather: string
     nightwind: string
     week: string
@@ -133,5 +133,37 @@ declare namespace API {
     max: number
     min: number
     date: string
+  }
+
+  namespace Meteo {
+    interface Response {
+      elevation: number
+      generationtime_ms: number
+      hourly: Hourly
+      hourly_units: HourlyUnits
+      latitude: number
+      longitude: number
+      timezone: string
+      timezone_abbreviation: string
+      utc_offset_seconds: number
+
+      [property: string]: unknown
+    }
+
+    type MeteoRes = CommonRes<Response>
+
+    interface Hourly {
+      temperature_2m: Array<number | null>
+      time: number[]
+
+      [property: string]: unknown
+    }
+
+    interface HourlyUnits {
+      temperature_2m: string
+      time: string
+
+      [property: string]: unknown
+    }
   }
 }

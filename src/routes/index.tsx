@@ -19,6 +19,6 @@ const ChartsDemo = lazy(() => import('@/views/ChartsDemo'))
  * @type {PathRouteProps[]}
  */
 export const routes: RouteProps[] = [
-  // { path: '/', element: <App />, meta: { title: 'home' } },
   { path: '/', element: <ChartsDemo />, meta: { title: '天气图表' } },
+  // { path: '/', element: <App />, meta: { title: 'home' } },
 ]

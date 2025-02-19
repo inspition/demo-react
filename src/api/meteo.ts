@@ -76,7 +76,7 @@ export async function fetchWeather(
  * @param {API.MeteoParams} [params]
  * @returns {*}
  */
-export function apiOpemMeteo(params?: API.MeteoParams) {
+export function apiOpemMeteo(params?: API.MeteoParams): API.Meteo.MeteoRes {
   return request({
     url: URL,
     method: 'GET',
