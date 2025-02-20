@@ -9,9 +9,9 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages-d build"
+    "deploy": "gh-pages -d build"
   },
-  "homepage": "https://inspition.github.io/demo-react/",
+  "homepage": "https://inspition.github.io/demo-react",
   "peerDependencies": {
     "lodash-es": "^4.17.20"
   },
