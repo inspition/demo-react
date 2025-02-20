@@ -5,6 +5,7 @@ import {
   Color,
   defined,
   Math,
+  SceneMode,
   ScreenSpaceEventHandler,
   ScreenSpaceEventType,
   // UrlTemplateImageryProvider,
@@ -13,6 +14,7 @@ import {
   WebMapTileServiceImageryProvider,
 } from 'cesium'
 import { TMAP_TK } from '@/config/index.json'
+import Styles from './cesium.module.scss'
 
 type HandlerEvent = ScreenSpaceEventHandler.PositionedEvent & {
   [k in string]: unknown
@@ -58,7 +60,7 @@ export const CesiumWrap = memo(
         // sceneModePicker: false,
         // watermark: false, // 隐藏水印
 
-        // sceneMode: SceneMode.SCENE2D,
+        sceneMode: SceneMode.SCENE2D,
       })
 
       return () => {
@@ -216,6 +218,10 @@ export const CesiumWrap = memo(
       onAdded?.(entity)
     }
 
-    return <div id="cesium-container" {...props} />
+    // console.log(Styles)
+
+    return (
+      <div id="cesium-container" className={Styles['cesium-wrap']} {...props} />
+    )
   }
 )

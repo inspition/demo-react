@@ -1,6 +1,23 @@
 import { API } from '@/types/api'
 import { Chart } from '@antv/g2'
-import { HTMLAttributes, useEffect, useRef } from 'react'
+import { Card, Col, Row, Statistic } from 'antd'
+import {
+  // CSSProperties,
+  HTMLAttributes,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react'
+
+const emojiMap: Record<string, string> = {
+  晴: '☀️',
+  阴: '☁️',
+  雨: '🌧️',
+  雪: '❄️',
+  雾: '🌫️',
+  多云: '⛅',
+  小雨: '🌧️',
+}
 
 /**
  * 柱状图
@@ -50,7 +67,7 @@ export function BarChart({
       .encode('x', '日期')
       .encode('y', '温度')
       .encode('color', 'type')
-    // .axis('x', { title: { text: '日期' } })
+      .axis('x', { labelFormatter: (d: string) => d?.slice(5) })
     // .axis('y', { title: { text: '温度' } })
 
     chart.render()
@@ -218,7 +235,11 @@ export function DistributionCharts({
       .style('fillOpacity', 0.8)
       .style('lineWidth', 1)
 
-    chart.axis('x', { title: '天气类型' })
+    chart.axis('x', {
+      title: '天气类型',
+      labelFormatter: (v: string) => emojiMap[v] ?? v,
+      labelFontSize: 20,
+    })
     chart.axis('y', { title: '出现次数' })
 
     chart.render()
@@ -396,4 +417,143 @@ export function CommonChart({
   }
 
   return <div {...props} ref={container}></div>
+}
+
+/**
+ * 仪表盘
+ *
+ * @export
+ * @param {({ data: API.Life } & HTMLAttributes<HTMLDivElement>)} param0
+ * @param {*} param0.data
+ * @param {*} param0....props
+ * @returns {*}
+ */
+export function Dashboard({
+  data,
+  ...props
+}: { data: API.Life } & HTMLAttributes<HTMLDivElement>) {
+  const container = useRef(null)
+
+  useEffect(() => {
+    if (container.current) init(container.current)
+  }, [data])
+
+  function init(container: HTMLElement) {
+    // 主标题
+    // chart.annotation().text({
+    //   position: ['50%', '10%'],
+    //   content: `${data.city} · ${data.weather}`,
+    //   style: { fontSize: 24, textAlign: 'center' },
+    // })
+
+    // 温度仪表盘
+    const tempChart = new Chart({ container, autoFit: true })
+    tempChart.options({
+      type: 'gauge',
+      autoFit: true,
+      data: {
+        value: {
+          target: data.temperature_float,
+          total: 70,
+          thresholds: [23, 46, 70],
+          name: '°C',
+        },
+      },
+      scale: { color: { range: ['gray', '#FAAD14', '#F4664A'] } },
+      style: {
+        arcShape: 'round',
+        arcLineWidth: 2,
+        textContent: (target: number) => `温度：${target}°C`,
+      },
+      legend: false,
+    })
+    tempChart.render()
+    // .style('text', { fontSize: 24 })
+
+    // 湿度仪表盘
+    const humidityChart = new Chart({ container: 'humidity-container' })
+    humidityChart.options({
+      type: 'liquid',
+      autoFit: true,
+      data: Number(data?.humidity ?? 0) / 100,
+      style: {
+        // contentText: 'center text',
+        contentFill: '#fff',
+        outlineBorder: 4,
+        outlineDistance: 8,
+        waveLength: 128,
+      },
+      // type: 'gauge',
+      // autoFit: true,
+      // data: {
+      //   value: {
+      //     target: data.humidity_float,
+      //     total: 100,
+      //     thresholds: [33, 66, 100],
+      //     name: '%',
+      //   },
+      // },
+      // scale: { color: { range: ['green', '#FAAD14', '#F4664A'] } },
+      // style: {
+      //   arcShape: 'round',
+      //   arcLineWidth: 2,
+      //   textContent: (target: number) => `湿度：${target}%`,
+      // },
+      // legend: false,
+    })
+    humidityChart.render()
+
+    // // 底部信息
+    // chart.annotation().text({
+    //   position: ['50%', '85%'],
+    //   content: `风向 ${data.winddirection} · 风力 ${data.windpower}\n更新时间：${data.reporttime}`,
+    //   style: { fontSize: 14, textAlign: 'center', fill: '#666' },
+    // })
+  }
+
+  const weatherFormat = useMemo(
+    () => `${emojiMap[data.weather ?? ''] ?? data.weather}${data.weather}`,
+    [data]
+  )
+
+  const addressFormat = useMemo(() => `${data.province} - ${data.city}`, [data])
+  // const textCenter: CSSProperties = { textAlign: 'center' }
+
+  return (
+    <>
+      <Row justify="space-around" align="middle" gutter={16}>
+        <Col span={12}>
+          <div {...props} ref={container}></div>
+        </Col>
+
+        <Col span={10}>
+          <div id="humidity-container" {...props}></div>
+        </Col>
+      </Row>
+
+      <Card>
+        <Row align="middle" gutter={16}>
+          <Col span={8}>
+            <Statistic title="时间" value={data.reporttime} />
+          </Col>
+
+          <Col span={8}>
+            <Statistic title="地区" value={addressFormat} />
+          </Col>
+
+          <Col span={8}>
+            <Statistic title="天气" value={weatherFormat} />
+          </Col>
+
+          <Col span={8}>
+            <Statistic title="风向" value={data.winddirection} />
+          </Col>
+
+          <Col span={8}>
+            <Statistic title="风力" value={data.windpower} />
+          </Col>
+        </Row>
+      </Card>
+    </>
+  )
 }
