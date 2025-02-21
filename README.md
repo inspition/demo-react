@@ -38,4 +38,4 @@
 
 ## 演示地址
 
-> [Vite + React + TS](https://inspition.github.io/demo-react/)
+> [Vite + React + TS](https://inspition.github.io/demo-react/) **cesium地图采用内置卫星地图：BingMaps，如未启用科学上网将无法正常渲染。**
