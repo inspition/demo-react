@@ -8,13 +8,10 @@ import {
   SceneMode,
   ScreenSpaceEventHandler,
   ScreenSpaceEventType,
-  // UrlTemplateImageryProvider,
-  // WebMercatorTilingScheme,
   Viewer,
-  WebMapTileServiceImageryProvider,
 } from 'cesium'
-import { TMAP_TK } from '@/config/index.json'
 import Styles from './cesium.module.scss'
+import { mapLayers } from './map-layers'
 
 type HandlerEvent = ScreenSpaceEventHandler.PositionedEvent & {
   [k in string]: unknown
@@ -77,7 +74,7 @@ export const CesiumWrap = memo(
       window.viewer = _viewer
 
       // mountGoogleMap(_viewer)
-      mountTianditu(_viewer) // 加载天地图底图
+      mountMapLayers(_viewer)
       mountHandler(_viewer)
 
       cameraFocus(await getUserGeolocation(), _viewer)
@@ -111,79 +108,15 @@ export const CesiumWrap = memo(
     //   _viewer.imageryLayers.addImageryProvider(googleImagerProvider)
     // }
 
-    function mountTianditu(_viewer: Viewer) {
-      // const imageryProviderT = new UrlTemplateImageryProvider({
-      //   url:
-      //     'http://{s}.tianditu.com/DataServer?T=vec_w&X={x}&Y={y}&L={z}&tk=' +
-      //     TMAP_TK,
-      //   subdomains: ['t0', 't1', 't2', 't3', 't4', 't5', 't6', 't7'],
-      //   maximumLevel: 18,
-      //   minimumLevel: 1,
-      //   credit: 'Tianditu',
-      // })
-
-      // 矢量底图
-      // _viewer.imageryLayers.addImageryProvider(
-      //   new WebMapTileServiceImageryProvider({
-      //     url:
-      //       'http://t0.tianditu.com/vec_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=vec&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk=' +
-      //       TMAP_TK,
-      //     layer: 'tdtVecBasicLayer',
-      //     style: 'default',
-      //     format: 'image/jpeg',
-      //     tileMatrixSetID: 'GoogleMapsCompatible',
-      //     // show: false,
-      //   })
-      // )
-
-      // 矢量注记
-      _viewer.imageryLayers.addImageryProvider(
-        new WebMapTileServiceImageryProvider({
-          url:
-            'http://t0.tianditu.com/cva_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=cva&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default.jpg&tk=' +
-            TMAP_TK,
-          layer: 'tdtAnnoLayer',
-          style: 'default',
-          format: 'image/jpeg',
-          tileMatrixSetID: 'GoogleMapsCompatible',
-        })
-      )
-
-      // 影像底图
-      // _viewer.imageryLayers.addImageryProvider(
-      //   new WebMapTileServiceImageryProvider({
-      //     url:
-      //       'http://t0.tianditu.com/img_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=img&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk=' +
-      //       TMAP_TK,
-      //     layer: 'tdtBasicLayer',
-      //     style: 'default',
-      //     format: 'image/jpeg',
-      //     tileMatrixSetID: 'GoogleMapsCompatible',
-      //     // show: false,
-      //   })
-      // )
-
-      // 影像注记
-      _viewer.imageryLayers.addImageryProvider(
-        new WebMapTileServiceImageryProvider({
-          url:
-            'http://t0.tianditu.com/cia_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=cia&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default.jpg&tk=' +
-            TMAP_TK,
-          layer: 'tdtAnnoLayer',
-          style: 'default',
-          format: 'image/jpeg',
-          tileMatrixSetID: 'GoogleMapsCompatible',
-          // show: false,
-        })
-      )
-
-      // 高德路网
-      // const imageryProviderAM = new UrlTemplateImageryProvider({
-      //   url: 'http://webst02.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scale=1&style=8',
-      //   minimumLevel: 3,
-      //   maximumLevel: 30,
-      // })
-      // _viewer.imageryLayers.addImageryProvider(imageryProviderAM) //加载矢量底图
+    /**
+     * 加载地图图层
+     *
+     * @param {Viewer} _viewer
+     */
+    function mountMapLayers(_viewer: Viewer) {
+      mapLayers().forEach(layer => {
+        _viewer.imageryLayers.addImageryProvider(...layer)
+      })
     }
 
     /**
