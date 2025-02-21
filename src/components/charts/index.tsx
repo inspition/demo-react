@@ -477,38 +477,14 @@ export function Dashboard({
       autoFit: true,
       data: Number(data?.humidity ?? 0) / 100,
       style: {
-        // contentText: 'center text',
+        contentText: `湿度：${data?.humidity_float}%`,
         contentFill: '#fff',
         outlineBorder: 4,
         outlineDistance: 8,
         waveLength: 128,
       },
-      // type: 'gauge',
-      // autoFit: true,
-      // data: {
-      //   value: {
-      //     target: data.humidity_float,
-      //     total: 100,
-      //     thresholds: [33, 66, 100],
-      //     name: '%',
-      //   },
-      // },
-      // scale: { color: { range: ['green', '#FAAD14', '#F4664A'] } },
-      // style: {
-      //   arcShape: 'round',
-      //   arcLineWidth: 2,
-      //   textContent: (target: number) => `湿度：${target}%`,
-      // },
-      // legend: false,
     })
     humidityChart.render()
-
-    // // 底部信息
-    // chart.annotation().text({
-    //   position: ['50%', '85%'],
-    //   content: `风向 ${data.winddirection} · 风力 ${data.windpower}\n更新时间：${data.reporttime}`,
-    //   style: { fontSize: 14, textAlign: 'center', fill: '#666' },
-    // })
   }
 
   const weatherFormat = useMemo(

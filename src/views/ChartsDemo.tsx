@@ -137,7 +137,7 @@ export default function ChardtsDemo() {
   useEffect(() => {
     if (extensions || city) searchWeather()
     fetchMeteoWeather()
-    console.log(import.meta.env, import.meta.env.VITE_BASE_URL)
+    // console.log(import.meta.env, import.meta.env.VITE_BASE_URL)
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [extensions, city])
@@ -192,46 +192,50 @@ export default function ChardtsDemo() {
                 </Prism>
               }
             >
-              {/* <Button disabled={!weatherStr}>JSON</Button> */}
-
               <Button disabled={!meteoData}>JSON</Button>
             </Popover>
           </Row>
 
-          {/* <Row></Row> */}
-
-          <Skeleton loading={loading} paragraph={{ rows: 10 }} active>
-            {weaAMP.length ? (
-              <Card title="高德天气API">
-                <Row justify="space-between">
-                  <Col span={24} lg={12} xl={8}>
+          {extensions === 'all' ? (
+            <Card title="高德天气API">
+              <Row justify="space-between" gutter={16}>
+                <Col span={24} lg={12} xl={8} style={{ height: '50vh' }}>
+                  <Skeleton loading={loading} paragraph={{ rows: 7 }} active>
                     <CommonCharts.BarChart
                       data={combData}
-                      style={{ width: '100%', height: '50vh' }}
+                      style={{ width: '100%', height: '100%' }}
                     />
-                  </Col>
+                  </Skeleton>
+                </Col>
 
-                  <Col span={24} lg={12} xl={8}>
+                <Col span={24} lg={12} xl={8} style={{ height: '50vh' }}>
+                  <Skeleton loading={loading} paragraph={{ rows: 7 }} active>
                     <CommonCharts.LinesChart
                       data={weaAMP}
-                      style={{ width: '100%', height: '50vh' }}
+                      style={{ width: '100%', height: '100%' }}
                     />
-                  </Col>
+                  </Skeleton>
+                </Col>
 
-                  <Col span={24} lg={12} xl={8}>
+                <Col span={24} lg={12} xl={8} style={{ height: '50vh' }}>
+                  <Skeleton loading={loading} paragraph={{ rows: 7 }} active>
                     <CommonCharts.DistributionCharts
                       data={weaAMP}
-                      style={{ width: '100%', height: '50vh' }}
+                      style={{ width: '100%', height: '100%' }}
                     />
-                  </Col>
-                </Row>
-              </Card>
-            ) : null}
-
-            {weatherStr?.lives?.map(v => (
-              <CommonCharts.Dashboard data={v} key={v.adcode} />
-            ))}
-          </Skeleton>
+                  </Skeleton>
+                </Col>
+              </Row>
+            </Card>
+          ) : (
+            <div className="wrap" style={{ minHeight: '600px' }}>
+              <Skeleton loading={loading} paragraph={{ rows: 10 }} active>
+                {weatherStr?.lives?.map(v => (
+                  <CommonCharts.Dashboard data={v} key={v.adcode} />
+                ))}
+              </Skeleton>
+            </div>
+          )}
         </div>
       ),
     },

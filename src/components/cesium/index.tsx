@@ -69,18 +69,36 @@ export const CesiumWrap = memo(
       }
     }, [])
 
-    function init(...args: ConstructorParameters<typeof Viewer>) {
+    async function init(...args: ConstructorParameters<typeof Viewer>) {
       viewer?.destroy()
 
       const _viewer = new Viewer(...args)
+      setViewer(_viewer)
+      window.viewer = _viewer
+
       // mountGoogleMap(_viewer)
       mountTianditu(_viewer) // 加载天地图底图
       mountHandler(_viewer)
 
-      setViewer(_viewer)
-      window.viewer = _viewer
+      cameraFocus(await getUserGeolocation(), _viewer)
 
       console.log('init', onUpdate?.(viewer))
+    }
+
+    /**
+     * 获取用户坐标
+     *
+     * @async
+     * @returns {unknown}
+     */
+    async function getUserGeolocation() {
+      const res = (await new Promise((resolve, reject) => {
+        navigator.geolocation?.getCurrentPosition?.(resolve, reject)
+      }).catch(err => err)) as unknown as GeolocationPosition
+
+      const { latitude, longitude } = res?.coords ?? {}
+
+      return res?.coords ? { latitude, longitude, height: 5000 } : undefined
     }
 
     // function mountGoogleMap(_viewer: Viewer) {
@@ -168,6 +186,27 @@ export const CesiumWrap = memo(
       // _viewer.imageryLayers.addImageryProvider(imageryProviderAM) //加载矢量底图
     }
 
+    /**
+     * 画面聚焦（默认经纬度：厦门）
+     *
+     * @param {{ longitude: number; latitude: number; height: number; }} [destination={ longitude: 118, latitude: 24, height: 5000 }]
+     * @param {*} [_viewer=viewer]
+     */
+    function cameraFocus(
+      destination = {
+        longitude: 118.12181772772028,
+        latitude: 24.492788845905654,
+        height: 5000,
+      },
+      _viewer = viewer
+    ) {
+      const { longitude, latitude, height } = destination ?? {}
+      _viewer?.camera.flyTo({
+        destination: Cartesian3.fromDegrees(longitude, latitude, height),
+        duration: 2,
+      })
+    }
+
     // 挂载事件处理
     function mountHandler(_viewer: Viewer) {
       const handler = new ScreenSpaceEventHandler(_viewer.scene.canvas)
@@ -179,7 +218,6 @@ export const CesiumWrap = memo(
 
         if (defined(pickedFeature) && pickedFeature?.id) {
           // 已有实体进行删除
-          // viewer?.entities.remove(pickedFeature.id)
           deleteEntity(pickedFeature?.id?.id ?? pickedFeature?.id, _viewer)
         } else {
           // 点击空白处添加标注
