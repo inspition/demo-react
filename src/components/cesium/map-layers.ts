@@ -1,4 +1,8 @@
-import { ImageryLayerCollection, UrlTemplateImageryProvider } from 'cesium'
+import {
+  ImageryLayerCollection,
+  WebMapTileServiceImageryProvider,
+} from 'cesium'
+import { TMAP_TK } from '@/config/index.json'
 
 type LayerParams = Parameters<ImageryLayerCollection['addImageryProvider']>
 
@@ -46,32 +50,32 @@ export const mapLayers: () => LayerParams[] = () => [
   //   }),
   // ],
 
-  // // 矢量注记
-  // [
-  //   new WebMapTileServiceImageryProvider({
-  //     url:
-  //       'http://t0.tianditu.com/cva_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=cva&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default.jpg&tk=' +
-  //       TMAP_TK,
-  //     layer: 'tdtAnnoLayer',
-  //     style: 'default',
-  //     format: 'image/jpeg',
-  //     tileMatrixSetID: 'GoogleMapsCompatible',
-  //   }),
-  // ],
+  // 矢量注记
+  [
+    new WebMapTileServiceImageryProvider({
+      url:
+        'http://t0.tianditu.com/cva_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=cva&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default.jpg&tk=' +
+        TMAP_TK,
+      layer: 'tdtAnnoLayer',
+      style: 'default',
+      format: 'image/jpeg',
+      tileMatrixSetID: 'GoogleMapsCompatible',
+    }),
+  ],
 
-  // // 影像注记
-  // [
-  //   new WebMapTileServiceImageryProvider({
-  //     url:
-  //       'http://t0.tianditu.com/cia_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=cia&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default.jpg&tk=' +
-  //       TMAP_TK,
-  //     layer: 'tdtAnnoLayer',
-  //     style: 'default',
-  //     format: 'image/jpeg',
-  //     tileMatrixSetID: 'GoogleMapsCompatible',
-  //     // show: false,
-  //   }),
-  // ],
+  // 影像注记
+  [
+    new WebMapTileServiceImageryProvider({
+      url:
+        'http://t0.tianditu.com/cia_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=cia&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default.jpg&tk=' +
+        TMAP_TK,
+      layer: 'tdtAnnoLayer',
+      style: 'default',
+      format: 'image/jpeg',
+      tileMatrixSetID: 'GoogleMapsCompatible',
+      // show: false,
+    }),
+  ],
 
   // // 高德地图
   // [
@@ -83,12 +87,12 @@ export const mapLayers: () => LayerParams[] = () => [
   //   }),
   // ],
 
-  // 高德路网
-  [
-    new UrlTemplateImageryProvider({
-      url: 'http://webst02.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scale=1&style=8',
-      minimumLevel: 3,
-      maximumLevel: 30,
-    }),
-  ],
+  // // 高德路网
+  // [
+  //   new UrlTemplateImageryProvider({
+  //     url: 'http://webst02.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scale=1&style=8',
+  //     minimumLevel: 3,
+  //     maximumLevel: 30,
+  //   }),
+  // ],
 ]
