@@ -9,6 +9,8 @@ import cesium from 'vite-plugin-cesium'
 
 export default defineConfig({
   plugins: [react(), envCompatible(), cesium()],
+  base: './',
+  // base: process.env.NODE_ENV === 'production' ? process.env.VITE_BASE_URL: './',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

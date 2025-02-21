@@ -137,6 +137,7 @@ export default function ChardtsDemo() {
   useEffect(() => {
     if (extensions || city) searchWeather()
     fetchMeteoWeather()
+    console.log(import.meta.env, import.meta.env.VITE_BASE_URL)
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [extensions, city])
