@@ -1,5 +1,9 @@
 # 天气数据可视化与地图交互应用
 
+#### 演示地址
+
+> [Vite + React + TS](https://inspition.github.io/demo-react/) **cesium地图采用内置卫星地图：BingMaps，如未启用科学上网将无法正常渲染。**
+
 ## 快速上手
 
 安装依赖`pnpm i`,启动项目`pnpm run dev`
@@ -33,7 +37,3 @@
 - GIS数据交互：点击地图区域获取对应地区天气数据。
 
 - 数据可视化：使用 AntV G2 展示温度、湿度等指标。
-
-## 演示地址
-
-> [Vite + React + TS](https://inspition.github.io/demo-react/) **cesium地图采用内置卫星地图：BingMaps，如未启用科学上网将无法正常渲染。**
