@@ -20,5 +20,5 @@ const ChartsDemo = lazy(() => import('@/views/ChartsDemo'))
  */
 export const routes: RouteProps[] = [
   { path: '', element: <ChartsDemo />, meta: { title: '天气可视化' } },
-  { path: '/test', element: <Test />, meta: { title: '画布滚动球' } },
+  { path: 'test', element: <Test />, meta: { title: '画布滚动球' } },
 ]
