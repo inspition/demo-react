@@ -1,0 +1,1 @@
+import{j as t}from"./index-DfR4vuZp.js";import{R as s,C as e}from"./canvas-D_w1BFux.js";function n(){return t.jsx(s,{justify:"center",align:"middle",style:{minHeight:"50vh"},children:t.jsx(e,{})})}export{n as default};
