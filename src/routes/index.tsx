@@ -10,7 +10,7 @@ interface RouteProps extends PathRouteProps {
   }
 }
 
-const Test = lazy(() => import('@/views/App'))
+const BocceBall = lazy(() => import('@/views/BocceBall'))
 const ChartsDemo = lazy(() => import('@/views/ChartsDemo'))
 
 /**
@@ -20,5 +20,5 @@ const ChartsDemo = lazy(() => import('@/views/ChartsDemo'))
  */
 export const routes: RouteProps[] = [
   { path: '', element: <ChartsDemo />, meta: { title: '天气可视化' } },
-  { path: 'test', element: <Test />, meta: { title: '画布滚动球' } },
+  { path: 'bocce-ball', element: <BocceBall />, meta: { title: '画布滚动球' } },
 ]
