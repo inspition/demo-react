@@ -3,6 +3,17 @@ import { AxiosResponse } from 'axios'
 type CommonRes<T> = Promise<AxiosResponse<T>['data']>
 
 declare namespace API {
+  interface Location {
+    show_name: string
+    show_namezh: string
+    show_nameen: string
+  }
+
+  interface LocationRes {
+    status: string
+    data: Location
+  }
+
   /**
    * Request
    */

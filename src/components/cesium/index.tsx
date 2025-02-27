@@ -95,7 +95,7 @@ export const CesiumWrap = memo(
 
       const { latitude, longitude } = res?.coords ?? {}
 
-      return res?.coords ? { latitude, longitude, height: 5000 } : undefined
+      return res?.coords ? { latitude, longitude, height: 50000 } : undefined
     }
 
     // function mountGoogleMap(_viewer: Viewer) {
@@ -129,7 +129,7 @@ export const CesiumWrap = memo(
       destination = {
         longitude: 118.12181772772028,
         latitude: 24.492788845905654,
-        height: 5000,
+        height: 50000,
       },
       _viewer = viewer
     ) {

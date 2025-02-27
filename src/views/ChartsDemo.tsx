@@ -1,4 +1,4 @@
-import { weatherforecast } from '@/api'
+import { locationToCity, weatherforecast } from '@/api'
 import type { API } from '@/types/api'
 import {
   Alert,
@@ -142,6 +142,32 @@ export default function ChardtsDemo() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [extensions, city])
 
+  // -----------地图
+  const [loaction, setLoaction] = useState<API.Location>({
+    show_name: '',
+    show_namezh: '',
+    show_nameen: '',
+  })
+  const loactionTitle = useMemo(
+    () =>
+      '在地图中点击任意位置显示当地天气预报：' + (loaction?.show_namezh ?? ''),
+    [loaction]
+  )
+
+  async function handleMapClick(
+    position = { latitude: 24.3125, longitude: 118 }
+  ) {
+    fetchMeteoWeather(position)
+
+    setLoading(true)
+
+    const { data, status } = await locationToCity(position)
+    if (status === 'ok') setLoaction(data)
+
+    setLoading(false)
+  }
+  // -----------地图 end
+
   const tabItems: TabsProps['items'] = [
     {
       key: '1',
@@ -278,13 +304,12 @@ export default function ChardtsDemo() {
                   style={{ width: '100%' }}
                   // message="提示"
                   type="info"
-                  description="在地图中点击任意位置显示当地天气预报"
+                  description={loactionTitle}
                   // showIcon
-                  closable
                 />
 
                 <CesiumWrap
-                  onAdded={fetchMeteoWeather}
+                  onAdded={handleMapClick}
                   style={{ height: '60vh' }}
                 />
               </Row>

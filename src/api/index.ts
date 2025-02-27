@@ -1,4 +1,4 @@
-import { API } from '@/types/api'
+import { API, CommonRes } from '@/types/api'
 import request from '@/utils/request'
 import config from '@/config/index.json'
 
@@ -34,5 +34,26 @@ export function weatherforecast(params: {
       ...params,
       key: config.AMP_KEY,
     },
+  })
+}
+
+/**
+ * 根据经纬度获取地区信息
+ *
+ * @export
+ * @param {{
+ *   longitude: number
+ *   latitude: number
+ * }} data
+ * @returns {CommonRes<API.LocationRes>}
+ */
+export function locationToCity(data: {
+  longitude: number
+  latitude: number
+}): CommonRes<API.LocationRes> {
+  return request({
+    url: 'https://api.abcdtools.com/location-to-city',
+    method: 'POST',
+    data,
   })
 }
