@@ -33,6 +33,7 @@ export default function ChardtsDemo() {
   // const [meteoData, setMeteoData] = useState<API.MinMax[]>()
   const [meteoData, setMeteoData] = useState<API.Cast[]>()
   const [city, setCity] = useState<string>('350200')
+
   // 高德天气整理
   const weaAMP = useMemo(
     () => weatherStr?.forecasts?.flatMap(v => v.casts) ?? [],
@@ -52,6 +53,7 @@ export default function ChardtsDemo() {
   const areaOptions: SelectProps['options'] = output.map(
     ({ label, adcode, citycode }) => ({ label, value: adcode, citycode })
   )
+
   function onChange(e: RadioChangeEvent) {
     setExtensions(e.target.value)
     // searchWeather()
@@ -60,6 +62,97 @@ export default function ChardtsDemo() {
     setCity(value)
     // searchWeather()
   }
+
+  const weatherTab = (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <Row align={'middle'} style={{ gap: 20 }}>
+        <span>气象类型：</span>
+
+        {/* <Flex vertical gap="middle">
+            </Flex> */}
+
+        <Radio.Group
+          value={extensions}
+          onChange={onChange}
+          options={options}
+          defaultValue="base"
+          block
+        />
+
+        <Col span={3}>
+          <Select
+            onChange={onAreaChange}
+            options={areaOptions}
+            defaultValue={[city]}
+            style={{ width: '100%' }}
+            filterOption={(l, o) => (o?.label ?? '')?.toString().includes(l)}
+            showSearch
+          />
+        </Col>
+
+        <Button onClick={searchWeather} type="primary">
+          天气查询
+        </Button>
+
+        <Popover
+          title="JSON"
+          content={
+            <Prism
+              language="json"
+              style={{ ...coy }}
+              customStyle={{ height: '500px' }}
+            >
+              {JSON.stringify(weatherStr, null, 2)}
+            </Prism>
+          }
+        >
+          <Button disabled={!meteoData}>JSON</Button>
+        </Popover>
+      </Row>
+
+      {extensions === 'all' ? (
+        <Card title="高德天气API">
+          <Row justify="space-between" gutter={16}>
+            <Col span={24} lg={12} xl={8} style={{ height: '50vh' }}>
+              <Skeleton loading={loading} paragraph={{ rows: 7 }} active>
+                <CommonCharts.BarChart
+                  data={combData}
+                  style={{ width: '100%', height: '100%' }}
+                />
+              </Skeleton>
+            </Col>
+
+            <Col span={24} lg={12} xl={8} style={{ height: '50vh' }}>
+              <Skeleton loading={loading} paragraph={{ rows: 7 }} active>
+                <CommonCharts.LinesChart
+                  data={weaAMP}
+                  style={{ width: '100%', height: '100%' }}
+                />
+              </Skeleton>
+            </Col>
+
+            <Col span={24} lg={12} xl={8} style={{ height: '50vh' }}>
+              <Skeleton loading={loading} paragraph={{ rows: 7 }} active>
+                <CommonCharts.DistributionCharts
+                  data={weaAMP}
+                  style={{ width: '100%', height: '100%' }}
+                />
+              </Skeleton>
+            </Col>
+          </Row>
+        </Card>
+      ) : (
+        <div className="wrap" style={{ minHeight: '600px' }}>
+          <Skeleton loading={loading} paragraph={{ rows: 10 }} active>
+            {weatherStr?.lives?.map(v => (
+              <CommonCharts.Dashboard data={v} key={v.adcode} />
+            ))}
+          </Skeleton>
+        </div>
+      )}
+    </div>
+  )
+
   // 高德天气
   async function searchWeather() {
     setLoading(true)
@@ -73,6 +166,7 @@ export default function ChardtsDemo() {
     // fetchWeather()
     // apiOpemMeteo({
   }
+
   // open-meteo天气
   async function fetchMeteoWeather(
     position = { latitude: 24.3125, longitude: 118 }
@@ -148,10 +242,49 @@ export default function ChardtsDemo() {
     show_namezh: '',
     show_nameen: '',
   })
+
   const loactionTitle = useMemo(
     () =>
       '在地图中点击任意位置显示当地天气预报：' + (loaction?.show_namezh ?? ''),
     [loaction]
+  )
+
+  const mapTab = (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <Row justify="space-between" style={{ flexDirection: 'column' }}>
+        <Card title="Open-Meteo: 这是一个开源天气 API，可供非商业用途免费使用。无需 API 密钥, 开箱即用">
+          <Row gutter={20}>
+            <Col span={24} lg={12} style={{ width: '100%', height: '30vh' }}>
+              <Skeleton loading={loading} paragraph={{ rows: 7 }} active>
+                <CommonCharts.BarChart
+                  data={meteoData ?? []}
+                  style={{ width: '100%', height: '100%' }}
+                />
+              </Skeleton>
+            </Col>
+
+            <Col span={24} lg={12} style={{ width: '100%', height: '30vh' }}>
+              <Skeleton loading={loading} paragraph={{ rows: 7 }} active>
+                <CommonCharts.LinesChart
+                  data={meteoData ?? []}
+                  style={{ width: '100%', height: '100%' }}
+                />
+              </Skeleton>
+            </Col>
+
+            <Alert
+              style={{ width: '100%' }}
+              // message="提示"
+              type="info"
+              description={loactionTitle}
+              // showIcon
+            />
+
+            <CesiumWrap onAdded={handleMapClick} style={{ height: '60vh' }} />
+          </Row>
+        </Card>
+      </Row>
+    </div>
   )
 
   async function handleMapClick(
@@ -173,150 +306,13 @@ export default function ChardtsDemo() {
       key: '1',
       label: '天气查询',
       destroyInactiveTabPane: true,
-      children: (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <Row align={'middle'} style={{ gap: 20 }}>
-            <span>气象类型：</span>
-
-            {/* <Flex vertical gap="middle">
-            </Flex> */}
-
-            <Radio.Group
-              value={extensions}
-              onChange={onChange}
-              options={options}
-              defaultValue="base"
-              block
-            />
-
-            <Col span={3}>
-              <Select
-                onChange={onAreaChange}
-                options={areaOptions}
-                defaultValue={[city]}
-                style={{ width: '100%' }}
-                filterOption={(l, o) =>
-                  (o?.label ?? '')?.toString().includes(l)
-                }
-                showSearch
-              />
-            </Col>
-
-            <Button onClick={searchWeather} type="primary">
-              天气查询
-            </Button>
-
-            <Popover
-              title="JSON"
-              content={
-                <Prism
-                  language="json"
-                  style={{ ...coy }}
-                  customStyle={{ height: '500px' }}
-                >
-                  {JSON.stringify(weatherStr, null, 2)}
-                </Prism>
-              }
-            >
-              <Button disabled={!meteoData}>JSON</Button>
-            </Popover>
-          </Row>
-
-          {extensions === 'all' ? (
-            <Card title="高德天气API">
-              <Row justify="space-between" gutter={16}>
-                <Col span={24} lg={12} xl={8} style={{ height: '50vh' }}>
-                  <Skeleton loading={loading} paragraph={{ rows: 7 }} active>
-                    <CommonCharts.BarChart
-                      data={combData}
-                      style={{ width: '100%', height: '100%' }}
-                    />
-                  </Skeleton>
-                </Col>
-
-                <Col span={24} lg={12} xl={8} style={{ height: '50vh' }}>
-                  <Skeleton loading={loading} paragraph={{ rows: 7 }} active>
-                    <CommonCharts.LinesChart
-                      data={weaAMP}
-                      style={{ width: '100%', height: '100%' }}
-                    />
-                  </Skeleton>
-                </Col>
-
-                <Col span={24} lg={12} xl={8} style={{ height: '50vh' }}>
-                  <Skeleton loading={loading} paragraph={{ rows: 7 }} active>
-                    <CommonCharts.DistributionCharts
-                      data={weaAMP}
-                      style={{ width: '100%', height: '100%' }}
-                    />
-                  </Skeleton>
-                </Col>
-              </Row>
-            </Card>
-          ) : (
-            <div className="wrap" style={{ minHeight: '600px' }}>
-              <Skeleton loading={loading} paragraph={{ rows: 10 }} active>
-                {weatherStr?.lives?.map(v => (
-                  <CommonCharts.Dashboard data={v} key={v.adcode} />
-                ))}
-              </Skeleton>
-            </div>
-          )}
-        </div>
-      ),
+      children: weatherTab,
     },
     {
       key: '2',
       label: '地图天气',
       destroyInactiveTabPane: true,
-      children: (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <Row justify="space-between" style={{ flexDirection: 'column' }}>
-            <Card title="Open-Meteo: 这是一个开源天气 API，可供非商业用途免费使用。无需 API 密钥, 开箱即用">
-              <Row gutter={20}>
-                <Col
-                  span={24}
-                  lg={12}
-                  style={{ width: '100%', height: '30vh' }}
-                >
-                  <Skeleton loading={loading} paragraph={{ rows: 7 }} active>
-                    <CommonCharts.BarChart
-                      data={meteoData ?? []}
-                      style={{ width: '100%', height: '100%' }}
-                    />
-                  </Skeleton>
-                </Col>
-
-                <Col
-                  span={24}
-                  lg={12}
-                  style={{ width: '100%', height: '30vh' }}
-                >
-                  <Skeleton loading={loading} paragraph={{ rows: 7 }} active>
-                    <CommonCharts.LinesChart
-                      data={meteoData ?? []}
-                      style={{ width: '100%', height: '100%' }}
-                    />
-                  </Skeleton>
-                </Col>
-
-                <Alert
-                  style={{ width: '100%' }}
-                  // message="提示"
-                  type="info"
-                  description={loactionTitle}
-                  // showIcon
-                />
-
-                <CesiumWrap
-                  onAdded={handleMapClick}
-                  style={{ height: '60vh' }}
-                />
-              </Row>
-            </Card>
-          </Row>
-        </div>
-      ),
+      children: mapTab,
     },
   ]
 
