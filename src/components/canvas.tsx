@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { memo } from 'react'
 import { useEffect, useRef } from 'react'
 
 interface Positives {
@@ -9,6 +9,21 @@ interface Positives {
 function CanvasRenderer() {
   const ref = useRef<HTMLCanvasElement>(null)
   const callback = useRef<(ctx: CanvasRenderingContext2D) => void>(null)
+
+  // 画布配置
+  const canvasConf = { width: 1200, height: 800 }
+  // 配置参数
+  const config = {
+    centerX: canvasConf.width / 2,
+    centerY: canvasConf.height / 2,
+    hexRadius: 200,
+    ballRadius: 10,
+    gravity: 0.5,
+    airResistance: 0.99,
+    rotationSpeed: 0.02,
+    restitution: 1.85,
+    friction: 0.7,
+  }
 
   // 障碍物配置
   const obstacleConf = useRef({
@@ -21,11 +36,8 @@ function CanvasRenderer() {
     onMove: false,
   })
 
-  const [, forceUpdate] = useState({})
-
   const setObConf = (newConf: Partial<typeof obstacleConf.current>) => {
     obstacleConf.current = { ...obstacleConf.current, ...newConf }
-    forceUpdate({})
   }
 
   useEffect(() => {
@@ -37,23 +49,10 @@ function CanvasRenderer() {
 
   function initCanvas(canvas: HTMLCanvasElement) {
     const ctx = canvas.getContext('2d')
-    canvas.width = 1200
-    canvas.height = 800
+    canvas.width = canvasConf.width
+    canvas.height = canvasConf.height
 
     addListeners(canvas)
-
-    // 配置参数
-    const config = {
-      centerX: canvas.width / 2,
-      centerY: canvas.height / 2,
-      hexRadius: 200,
-      ballRadius: 10,
-      gravity: 0.5,
-      airResistance: 0.99,
-      rotationSpeed: 0.02,
-      restitution: 1.85,
-      friction: 0.7,
-    }
 
     // 初始化状态
     const state = {
@@ -218,7 +217,7 @@ function CanvasRenderer() {
   function handleMouse(ev: MouseEvent) {
     const { movementX, movementY } = ev ?? {}
     const conf = obstacleConf.current
-    // console.log({ movementX, movementY }, ev)
+    // console.log({ movementX, movementY, offsetX, offsetY })
 
     switch (ev.type) {
       case 'mousedown':
@@ -230,7 +229,7 @@ function CanvasRenderer() {
         break
 
       case 'mousemove':
-        if (obstacleConf.current.onMove) {
+        if (obstacleConf.current.onMove && checkBoundary(ev)) {
           setObConf({
             x: conf.x + movementX,
             y: conf.y + movementY,
@@ -239,6 +238,32 @@ function CanvasRenderer() {
         break
     }
   }
+
+  /**
+   * 检查是否处于画布范围
+   *
+   * @param {MouseEvent} ev
+   * @returns {boolean}
+   */
+  function checkBoundary(ev: MouseEvent): boolean {
+    const { offsetX, offsetY } = ev ?? {}
+
+    // 处于画布范围
+    const valid =
+      offsetX >= 0 &&
+      offsetX <= canvasConf.width &&
+      offsetY >= 0 &&
+      offsetY <= canvasConf.height
+
+    // 不在画布范围时，取消移动状态
+    if (!valid) {
+      console.log('超出了', { offsetX, offsetY })
+
+      setObConf({ onMove: false })
+    }
+
+    return valid
+  }
   function destoryListeners(canvas: HTMLCanvasElement) {
     canvas?.removeEventListener('mousemove', handleMouse)
     canvas?.removeEventListener('mousedown', handleMouse)
@@ -246,11 +271,13 @@ function CanvasRenderer() {
   }
 
   return (
-    <canvas
-      ref={ref}
-      style={{ border: '1px solid #999', borderRadius: '5px' }}
-    />
+    <>
+      <canvas
+        ref={ref}
+        style={{ border: '1px solid #999', borderRadius: '5px' }}
+      />
+    </>
   )
 }
 
-export default React.memo(CanvasRenderer)
+export default memo(CanvasRenderer)
