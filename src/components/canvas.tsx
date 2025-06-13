@@ -14,14 +14,23 @@ function CanvasRenderer() {
   const canvasConf = { width: 1200, height: 800 }
   // 配置参数
   const config = {
+    /** 画布中心X坐标 */
     centerX: canvasConf.width / 2,
+    /** 画布中心Y坐标 */
     centerY: canvasConf.height / 2,
+    /** 六边形半径 */
     hexRadius: 200,
+    /** 球半径 */
     ballRadius: 10,
+    /** 重力加速度 0.5 */
     gravity: 0.5,
+    /** 空气阻力 0.99 */
     airResistance: 0.99,
+    /** 六边形旋转速度 0.02 */
     rotationSpeed: 0.02,
+    /** 碰撞恢复系数 0.8 */
     restitution: 1.85,
+    /** 摩擦系数 0.7 */
     friction: 0.7,
   }
 
@@ -105,6 +114,7 @@ function CanvasRenderer() {
         obstacleConf.current.width + obstacleConf.current.x,
         obstacleConf.current.height + obstacleConf.current.y
       )
+      ctx.closePath()
 
       ctx.stroke()
     }

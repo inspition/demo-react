@@ -1,6 +1,8 @@
 import {
   ImageryLayerCollection,
+  UrlTemplateImageryProvider,
   WebMapTileServiceImageryProvider,
+  WebMercatorTilingScheme,
 } from 'cesium'
 import { TMAP_TK } from '@/config/index.json'
 
@@ -12,15 +14,15 @@ type LayerParams = Parameters<ImageryLayerCollection['addImageryProvider']>
  * @returns {[ImageryProvider, number?][]}
  */
 export const mapLayers: () => LayerParams[] = () => [
-  // // 谷歌地图
-  // [
-  //   new UrlTemplateImageryProvider({
-  //     url: 'https://www.google.com/maps/vt?lyrs=s@800&x={x}&y={y}&z={z}',
-  //     tilingScheme: new WebMercatorTilingScheme(),
-  //     minimumLevel: 1,
-  //     maximumLevel: 30,
-  //   }),
-  // ],
+  // 谷歌地图
+  [
+    new UrlTemplateImageryProvider({
+      url: 'https://www.google.com/maps/vt?lyrs=s@800&x={x}&y={y}&z={z}',
+      tilingScheme: new WebMercatorTilingScheme(),
+      minimumLevel: 1,
+      maximumLevel: 30,
+    }),
+  ],
 
   // // 影像底图
   // [

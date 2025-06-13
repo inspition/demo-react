@@ -40,11 +40,11 @@ export default function ChardtsDemo() {
     [weatherStr]
   ) as API.Cast[]
   // 组合高德、open-meteo天气数据
-  const combData = useMemo(() => {
-    const comb = [...(weaAMP ?? []), ...(meteoData ?? [])] as API.Cast[]
+  // const combData = useMemo(() => {
+  //   const comb = [...(weaAMP ?? []), ...(meteoData ?? [])] as API.Cast[]
 
-    return comb.sort((a, b) => (a?.date === b?.date ? -1 : 1))
-  }, [weatherStr, meteoData])
+  //   return comb.sort((a, b) => (a?.date === b?.date ? -1 : 1))
+  // }, [weatherStr, meteoData])
 
   const options: CheckboxGroupProps<string>['options'] = [
     { label: '实况天气', value: 'base' },
@@ -116,7 +116,7 @@ export default function ChardtsDemo() {
             <Col span={24} lg={12} xl={8} style={{ height: '50vh' }}>
               <Skeleton loading={loading} paragraph={{ rows: 7 }} active>
                 <CommonCharts.BarChart
-                  data={combData}
+                  data={weaAMP}
                   style={{ width: '100%', height: '100%' }}
                 />
               </Skeleton>
